@@ -33,6 +33,7 @@ namespace Final_Project_Faculty_System
 			PopulateCourseTabs();
 			PopulateViewCourseTabs();
 			PopulateTeachDropdown();
+			DisplayTotalCoursesAndList();
 		}
 
 		private string CapitalizeEachWord(string input)
@@ -85,6 +86,72 @@ namespace Final_Project_Faculty_System
 				loginForm.Show();
 			}
 		}
+
+		private void DisplayTotalCoursesAndList()
+		{
+			try
+			{
+				using (SqlConnection conn = new SqlConnection(connectionString))
+				{
+					conn.Open();
+
+					// Get the total number of courses the lecturer is teaching
+					string queryTotalCourses = "SELECT COUNT(*) FROM Courses WHERE Username = @Username";
+					int totalCourses = 0;
+					using (SqlCommand cmd = new SqlCommand(queryTotalCourses, conn))
+					{
+						cmd.Parameters.AddWithValue("@Username", lecturerUsername);
+						totalCourses = (int)cmd.ExecuteScalar();
+					}
+
+					// Update the label to display the total number of courses
+					lbl_totalcourse.Text = $"This Semester Total Course: {totalCourses}";
+
+					// Get the list of courses the lecturer is teaching
+					string queryCourses = "SELECT CourseCode, CourseName FROM Courses WHERE Username = @Username";
+					List<string> courseList = new List<string>();
+					using (SqlCommand cmd = new SqlCommand(queryCourses, conn))
+					{
+						cmd.Parameters.AddWithValue("@Username", lecturerUsername);
+						using (SqlDataReader reader = cmd.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string courseCode = reader["CourseCode"].ToString();
+								string courseName = reader["CourseName"].ToString();
+								courseList.Add($"{courseCode} - {courseName}");
+							}
+						}
+					}
+
+					// Display each course in the panel
+					panel_courselist.Controls.Clear(); // Clear existing controls
+					int topMargin = 2; // Top margin for the labels
+					int bottomMargin = 2; // Bottom margin for the labels
+					int currentYPosition = 0; // Track the current Y position for each label
+
+					foreach (var course in courseList)
+					{
+						Label courseLabel = new Label
+						{
+							Text = course,
+							AutoSize = true,
+							Margin = new Padding(0, topMargin, 0, bottomMargin),
+							Location = new Point(0, currentYPosition) // Set the location for the label
+						};
+						panel_courselist.Controls.Add(courseLabel);
+
+						// Update currentYPosition for the next label, considering the height of the label plus margins
+						currentYPosition += courseLabel.Height + topMargin + bottomMargin;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"Error fetching courses: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
 
 		private void PopulateCourseDropdown()
 		{
@@ -186,6 +253,7 @@ namespace Final_Project_Faculty_System
 					PopulateCourseDropdownDelete();
 					PopulateCourseTabs(); // Refreshes the update data section
 					PopulateViewCourseTabs(); // Refreshes the view data section
+					DisplayTotalCoursesAndList();
 				}
 			}
 			catch (SqlException ex) when (ex.Number == 2627)
@@ -355,6 +423,7 @@ namespace Final_Project_Faculty_System
 						PopulateCourseDropdownDelete();
 						PopulateCourseTabs();
 						PopulateViewCourseTabs();
+						DisplayTotalCoursesAndList();
 					}
 				}
 				catch (Exception ex)
@@ -441,6 +510,7 @@ namespace Final_Project_Faculty_System
 							PopulateCourseDropdownDelete();
 							PopulateCourseTabs(); // Refreshes the update data section
 							PopulateViewCourseTabs(); // Refreshes the view data section
+							DisplayTotalCoursesAndList();
 						}
 					}
 					catch (Exception ex)
@@ -720,6 +790,18 @@ namespace Final_Project_Faculty_System
 						}
 					}
 
+					// Check if the group is already full (max 5 students)
+					string checkGroupFullQuery = $"SELECT COUNT(*) FROM [{courseCode}]";
+					using (SqlCommand cmd = new SqlCommand(checkGroupFullQuery, conn))
+					{
+						int studentCount = (int)cmd.ExecuteScalar();
+						if (studentCount >= 5)
+						{
+							MessageBox.Show("The selected course group is already full (5 students).", "Group Full", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+							return;
+						}
+					}
+
 					// Retrieve student information from the Students table
 					string queryStudent = "SELECT FullName, PhoneNumber, ProgramCode FROM Students WHERE StudentID = @StudentID";
 					string fullName, phoneNumber, programCode;
@@ -763,18 +845,20 @@ namespace Final_Project_Faculty_System
 						cmd.ExecuteNonQuery();
 					}
 
-					MessageBox.Show("Student added successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MessageBox.Show($"Student '{fullName}' has been added to {courseCode}.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 
 				RefreshCourseTab(courseCode);
 				PopulateCourseTabs();
 				PopulateViewCourseTabs();
+				DisplayTotalCoursesAndList();
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show($"Error adding student to course: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
+
 
 		private void RemoveStudentFromCourse(string studentDisplayName, string courseCode)
 		{

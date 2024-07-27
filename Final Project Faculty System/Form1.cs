@@ -65,10 +65,10 @@ namespace Final_Project_Faculty_System
 
 		private void btn_student_Click(object sender, EventArgs e)
 		{
-			// Instantiate the StudentDashboard form without any parameters
+			// Instantiate the StudentLogin form without any parameters
 			StudentLogin studentLogin = new StudentLogin();
 
-			// Show the StudentDashboard form
+			// Show the StudentLogin form
 			studentLogin.Show();
 
 			// Hide the current login form

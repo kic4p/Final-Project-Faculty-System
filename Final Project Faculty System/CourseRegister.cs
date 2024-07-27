@@ -272,6 +272,24 @@ namespace Final_Project_Faculty_System
 				{
 					conn.Open();
 
+					// Check if the student is already enrolled in 8 or more courses
+					string checkCoursesQuery = "SELECT CourseCode FROM Students WHERE StudentID = @StudentID";
+					using (SqlCommand checkCoursesCmd = new SqlCommand(checkCoursesQuery, conn))
+					{
+						checkCoursesCmd.Parameters.AddWithValue("@StudentID", studentID);
+						string courseCodes = checkCoursesCmd.ExecuteScalar()?.ToString();
+						if (!string.IsNullOrEmpty(courseCodes))
+						{
+							string[] courses = courseCodes.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+							if (courses.Length >= 8)
+							{
+								MessageBox.Show("You cannot enroll in more than 8 courses.", "Enrollment Limit Reached", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+								return;
+							}
+						}
+					}
+
+					// Retrieve student details
 					string studentQuery = "SELECT FullName, PhoneNumber, ProgramCode FROM Students WHERE StudentID = @StudentID";
 					using (SqlCommand studentCmd = new SqlCommand(studentQuery, conn))
 					{
@@ -292,6 +310,7 @@ namespace Final_Project_Faculty_System
 						}
 					}
 
+					// Enroll student in the course
 					string enrollQuery = $"INSERT INTO [{courseCode}] (StudentID, FullName, PhoneNumber, ProgramCode) VALUES (@StudentID, @FullName, @PhoneNumber, @ProgramCode)";
 					using (SqlCommand enrollCmd = new SqlCommand(enrollQuery, conn))
 					{
@@ -302,6 +321,7 @@ namespace Final_Project_Faculty_System
 						enrollCmd.ExecuteNonQuery();
 					}
 
+					// Update the student's course codes
 					string updateQuery = "UPDATE Students SET CourseCode = CASE WHEN CourseCode IS NULL OR CourseCode = '' THEN @CourseCode ELSE CourseCode + ', ' + @CourseCode END WHERE StudentID = @StudentID";
 					using (SqlCommand updateCmd = new SqlCommand(updateQuery, conn))
 					{

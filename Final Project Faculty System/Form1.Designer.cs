@@ -131,7 +131,7 @@
 			Font = new Font("Source Sans 3 Medium", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
 			FormBorderStyle = FormBorderStyle.FixedSingle;
 			Name = "Form1";
-			Text = "Form1";
+			Text = "Lecturer Login";
 			Load += Form1_Load;
 			ResumeLayout(false);
 			PerformLayout();

@@ -73,10 +73,13 @@
 			comBox_delete = new ComboBox();
 			lbl_delete_course = new Label();
 			label2 = new Label();
+			lbl_totalcourse = new Label();
+			panel_courselist = new Panel();
 			panel_title.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
 			((System.ComponentModel.ISupportInitialize)picBox_unisel).BeginInit();
 			tabControl.SuspendLayout();
+			home.SuspendLayout();
 			view_data.SuspendLayout();
 			update_data.SuspendLayout();
 			choose_student.SuspendLayout();
@@ -179,6 +182,8 @@
 			// home
 			// 
 			home.BackColor = Color.White;
+			home.Controls.Add(panel_courselist);
+			home.Controls.Add(lbl_totalcourse);
 			home.Font = new Font("Source Sans 3 Medium", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
 			home.Location = new Point(4, 29);
 			home.Name = "home";
@@ -195,7 +200,7 @@
 			view_data.Location = new Point(4, 29);
 			view_data.Name = "view_data";
 			view_data.Padding = new Padding(3);
-			view_data.Size = new Size(1224, 294);
+			view_data.Size = new Size(1224, 332);
 			view_data.TabIndex = 1;
 			view_data.Text = "View Data";
 			// 
@@ -215,7 +220,7 @@
 			update_data.Location = new Point(4, 29);
 			update_data.Name = "update_data";
 			update_data.Padding = new Padding(3);
-			update_data.Size = new Size(1224, 294);
+			update_data.Size = new Size(1224, 332);
 			update_data.TabIndex = 2;
 			update_data.Text = "Update Data";
 			// 
@@ -236,7 +241,7 @@
 			choose_student.Controls.Add(comBox_teach);
 			choose_student.Location = new Point(4, 29);
 			choose_student.Name = "choose_student";
-			choose_student.Size = new Size(1224, 294);
+			choose_student.Size = new Size(1224, 332);
 			choose_student.TabIndex = 3;
 			choose_student.Text = "Choose Student";
 			// 
@@ -290,7 +295,7 @@
 			search_phone.Controls.Add(lbl_searchtitle);
 			search_phone.Location = new Point(4, 29);
 			search_phone.Name = "search_phone";
-			search_phone.Size = new Size(1224, 294);
+			search_phone.Size = new Size(1224, 332);
 			search_phone.TabIndex = 4;
 			search_phone.Text = "Search Phone";
 			// 
@@ -353,7 +358,7 @@
 			create_course.Controls.Add(lbl_title_createcourse);
 			create_course.Location = new Point(4, 29);
 			create_course.Name = "create_course";
-			create_course.Size = new Size(1224, 294);
+			create_course.Size = new Size(1224, 332);
 			create_course.TabIndex = 5;
 			create_course.Text = "Create Course";
 			// 
@@ -503,7 +508,7 @@
 			drop_course.Controls.Add(label2);
 			drop_course.Location = new Point(4, 29);
 			drop_course.Name = "drop_course";
-			drop_course.Size = new Size(1224, 294);
+			drop_course.Size = new Size(1224, 332);
 			drop_course.TabIndex = 6;
 			drop_course.Text = "Drop Course";
 			// 
@@ -560,6 +565,25 @@
 			label2.TabIndex = 1;
 			label2.Text = "Delete Course";
 			// 
+			// lbl_totalcourse
+			// 
+			lbl_totalcourse.AutoSize = true;
+			lbl_totalcourse.Font = new Font("Source Sans 3", 13.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+			lbl_totalcourse.Location = new Point(68, 121);
+			lbl_totalcourse.Name = "lbl_totalcourse";
+			lbl_totalcourse.Size = new Size(295, 30);
+			lbl_totalcourse.TabIndex = 0;
+			lbl_totalcourse.Text = "This Semester Total Course:";
+			// 
+			// panel_courselist
+			// 
+			panel_courselist.AutoScroll = true;
+			panel_courselist.Font = new Font("Source Sans 3", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+			panel_courselist.Location = new Point(674, 11);
+			panel_courselist.Name = "panel_courselist";
+			panel_courselist.Size = new Size(484, 271);
+			panel_courselist.TabIndex = 1;
+			// 
 			// LecturerDashboard
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
@@ -576,6 +600,8 @@
 			((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
 			((System.ComponentModel.ISupportInitialize)picBox_unisel).EndInit();
 			tabControl.ResumeLayout(false);
+			home.ResumeLayout(false);
+			home.PerformLayout();
 			view_data.ResumeLayout(false);
 			update_data.ResumeLayout(false);
 			choose_student.ResumeLayout(false);
@@ -636,5 +662,7 @@
 		private Label lbl_subtitle;
 		private Label lbl_title;
 		private ComboBox comBox_teach;
+		private Label lbl_totalcourse;
+		private Panel panel_courselist;
 	}
 }
