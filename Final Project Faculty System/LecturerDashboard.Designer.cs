@@ -40,10 +40,20 @@
 			tabControl = new TabControl();
 			home = new TabPage();
 			view_data = new TabPage();
+			tabControl2 = new TabControl();
 			update_data = new TabPage();
 			tabControl1 = new TabControl();
 			choose_student = new TabPage();
+			btn_choose = new Button();
+			lbl_subtitle = new Label();
+			lbl_title = new Label();
+			comBox_teach = new ComboBox();
 			search_phone = new TabPage();
+			panelphone = new Panel();
+			btn_search = new Button();
+			txtbox_phone = new TextBox();
+			label3 = new Label();
+			lbl_searchtitle = new Label();
 			create_course = new TabPage();
 			btn_create = new Button();
 			panel1 = new Panel();
@@ -63,13 +73,14 @@
 			comBox_delete = new ComboBox();
 			lbl_delete_course = new Label();
 			label2 = new Label();
-			tabControl2 = new TabControl();
 			panel_title.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
 			((System.ComponentModel.ISupportInitialize)picBox_unisel).BeginInit();
 			tabControl.SuspendLayout();
 			view_data.SuspendLayout();
 			update_data.SuspendLayout();
+			choose_student.SuspendLayout();
+			search_phone.SuspendLayout();
 			create_course.SuspendLayout();
 			panel1.SuspendLayout();
 			drop_course.SuspendLayout();
@@ -188,6 +199,14 @@
 			view_data.TabIndex = 1;
 			view_data.Text = "View Data";
 			// 
+			// tabControl2
+			// 
+			tabControl2.Location = new Point(0, 0);
+			tabControl2.Name = "tabControl2";
+			tabControl2.SelectedIndex = 0;
+			tabControl2.Size = new Size(1228, 298);
+			tabControl2.TabIndex = 0;
+			// 
 			// update_data
 			// 
 			update_data.BackColor = Color.White;
@@ -211,20 +230,117 @@
 			// choose_student
 			// 
 			choose_student.BackColor = Color.White;
+			choose_student.Controls.Add(btn_choose);
+			choose_student.Controls.Add(lbl_subtitle);
+			choose_student.Controls.Add(lbl_title);
+			choose_student.Controls.Add(comBox_teach);
 			choose_student.Location = new Point(4, 29);
 			choose_student.Name = "choose_student";
 			choose_student.Size = new Size(1224, 294);
 			choose_student.TabIndex = 3;
 			choose_student.Text = "Choose Student";
 			// 
+			// btn_choose
+			// 
+			btn_choose.BackColor = Color.Black;
+			btn_choose.ForeColor = Color.White;
+			btn_choose.Location = new Point(536, 176);
+			btn_choose.Name = "btn_choose";
+			btn_choose.Size = new Size(94, 29);
+			btn_choose.TabIndex = 3;
+			btn_choose.Text = "Choose";
+			btn_choose.UseVisualStyleBackColor = false;
+			btn_choose.Click += btn_Choose_Click;
+			// 
+			// lbl_subtitle
+			// 
+			lbl_subtitle.AutoSize = true;
+			lbl_subtitle.Font = new Font("Source Sans 3", 9F, FontStyle.Italic, GraphicsUnit.Point, 0);
+			lbl_subtitle.Location = new Point(500, 50);
+			lbl_subtitle.Name = "lbl_subtitle";
+			lbl_subtitle.Size = new Size(169, 40);
+			lbl_subtitle.TabIndex = 2;
+			lbl_subtitle.Text = "randomly choose student \r\nfrom the selected course";
+			// 
+			// lbl_title
+			// 
+			lbl_title.AutoSize = true;
+			lbl_title.Font = new Font("Source Sans 3 Medium", 16.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+			lbl_title.Location = new Point(472, 13);
+			lbl_title.Name = "lbl_title";
+			lbl_title.Size = new Size(218, 37);
+			lbl_title.TabIndex = 1;
+			lbl_title.Text = "Choose Student";
+			// 
+			// comBox_teach
+			// 
+			comBox_teach.FormattingEnabled = true;
+			comBox_teach.Location = new Point(380, 107);
+			comBox_teach.Name = "comBox_teach";
+			comBox_teach.Size = new Size(401, 28);
+			comBox_teach.TabIndex = 0;
+			// 
 			// search_phone
 			// 
 			search_phone.BackColor = Color.White;
+			search_phone.Controls.Add(panelphone);
+			search_phone.Controls.Add(btn_search);
+			search_phone.Controls.Add(txtbox_phone);
+			search_phone.Controls.Add(label3);
+			search_phone.Controls.Add(lbl_searchtitle);
 			search_phone.Location = new Point(4, 29);
 			search_phone.Name = "search_phone";
 			search_phone.Size = new Size(1224, 294);
 			search_phone.TabIndex = 4;
 			search_phone.Text = "Search Phone";
+			// 
+			// panelphone
+			// 
+			panelphone.Location = new Point(495, 7);
+			panelphone.Name = "panelphone";
+			panelphone.Size = new Size(719, 280);
+			panelphone.TabIndex = 4;
+			// 
+			// btn_search
+			// 
+			btn_search.BackColor = Color.Black;
+			btn_search.ForeColor = Color.White;
+			btn_search.Location = new Point(282, 175);
+			btn_search.Name = "btn_search";
+			btn_search.Size = new Size(94, 29);
+			btn_search.TabIndex = 3;
+			btn_search.Text = "Search";
+			btn_search.UseVisualStyleBackColor = false;
+			btn_search.Click += btnSearch_Click;
+			// 
+			// txtbox_phone
+			// 
+			txtbox_phone.Font = new Font("Source Sans 3", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+			txtbox_phone.Location = new Point(72, 175);
+			txtbox_phone.Name = "txtbox_phone";
+			txtbox_phone.Size = new Size(204, 29);
+			txtbox_phone.TabIndex = 2;
+			// 
+			// label3
+			// 
+			label3.AutoSize = true;
+			label3.Font = new Font("Source Sans 3", 9F, FontStyle.Italic, GraphicsUnit.Point, 0);
+			label3.Location = new Point(88, 61);
+			label3.Name = "label3";
+			label3.Size = new Size(276, 40);
+			label3.TabIndex = 1;
+			label3.Text = "you can search by using full phone number \r\nor partial phone number.\r\n";
+			label3.TextAlign = ContentAlignment.TopCenter;
+			// 
+			// lbl_searchtitle
+			// 
+			lbl_searchtitle.AutoSize = true;
+			lbl_searchtitle.Font = new Font("Source Sans 3", 16.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+			lbl_searchtitle.Location = new Point(80, 25);
+			lbl_searchtitle.Name = "lbl_searchtitle";
+			lbl_searchtitle.Size = new Size(296, 37);
+			lbl_searchtitle.TabIndex = 0;
+			lbl_searchtitle.Text = "Search Phone Number";
 			// 
 			// create_course
 			// 
@@ -444,14 +560,6 @@
 			label2.TabIndex = 1;
 			label2.Text = "Delete Course";
 			// 
-			// tabControl2
-			// 
-			tabControl2.Location = new Point(0, 0);
-			tabControl2.Name = "tabControl2";
-			tabControl2.SelectedIndex = 0;
-			tabControl2.Size = new Size(1228, 298);
-			tabControl2.TabIndex = 0;
-			// 
 			// LecturerDashboard
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
@@ -470,6 +578,10 @@
 			tabControl.ResumeLayout(false);
 			view_data.ResumeLayout(false);
 			update_data.ResumeLayout(false);
+			choose_student.ResumeLayout(false);
+			choose_student.PerformLayout();
+			search_phone.ResumeLayout(false);
+			search_phone.PerformLayout();
 			create_course.ResumeLayout(false);
 			create_course.PerformLayout();
 			panel1.ResumeLayout(false);
@@ -515,5 +627,14 @@
 		private Button btn_logout;
 		private TabControl tabControl1;
 		private TabControl tabControl2;
+		private Label label3;
+		private Label lbl_searchtitle;
+		private Button btn_search;
+		private TextBox txtbox_phone;
+		private Panel panelphone;
+		private Button btn_choose;
+		private Label lbl_subtitle;
+		private Label lbl_title;
+		private ComboBox comBox_teach;
 	}
 }

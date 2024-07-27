@@ -32,6 +32,7 @@ namespace Final_Project_Faculty_System
 			PopulateCourseDropdownDelete();
 			PopulateCourseTabs();
 			PopulateViewCourseTabs();
+			PopulateTeachDropdown();
 		}
 
 		private string CapitalizeEachWord(string input)
@@ -196,7 +197,6 @@ namespace Final_Project_Faculty_System
 				MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
-
 
 		private void ResetGroupButtons()
 		{
@@ -451,7 +451,6 @@ namespace Final_Project_Faculty_System
 			}
 		}
 
-
 		private void PopulateCourseTabs()
 		{
 			try
@@ -663,8 +662,6 @@ namespace Final_Project_Faculty_System
 			}
 		}
 
-
-
 		private void PopulateStudentComboBox(ComboBox comboBox, string courseCode)
 		{
 			comboBox.Items.Clear();
@@ -779,7 +776,6 @@ namespace Final_Project_Faculty_System
 			}
 		}
 
-
 		private void RemoveStudentFromCourse(string studentDisplayName, string courseCode)
 		{
 			try
@@ -884,6 +880,236 @@ namespace Final_Project_Faculty_System
 			catch (Exception ex)
 			{
 				MessageBox.Show($"Error updating total student count: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		private void btnSearch_Click(object sender, EventArgs e)
+		{
+			string searchQuery = txtbox_phone.Text.Trim(); // Assuming you have a textbox named txtSearchPhone
+			if (!string.IsNullOrEmpty(searchQuery))
+			{
+				SearchPhoneNumber(searchQuery);
+			}
+			else
+			{
+				MessageBox.Show("Please enter a phone number to search.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		private void SearchPhoneNumber(string searchQuery)
+		{
+			// Clear any existing controls in the panel
+			panelphone.Controls.Clear();
+
+			// Create a new DataGridView
+			DataGridView dgv = new DataGridView
+			{
+				Width = panelphone.Width,
+				Height = panelphone.Height,
+				AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None, // Manual control over column widths
+				AllowUserToAddRows = false, // Disable adding new rows by the user
+				RowHeadersVisible = false // Hide the row headers
+			};
+
+			// Add columns to DataGridView
+			dgv.Columns.Add("StudentID", "Student ID");
+			dgv.Columns.Add("FullName", "Full Name");
+			dgv.Columns.Add("CourseCode", "Course");
+			dgv.Columns.Add("ProgramCode", "Program");
+			dgv.Columns.Add("PhoneNumber", "Phone");
+
+			// Enable text wrapping in the Course column
+			dgv.Columns["CourseCode"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+
+			// Dictionary to hold student information
+			var studentInfo = new Dictionary<string, (string FullName, string ProgramCode, string PhoneNumber, List<string> CourseCodes)>();
+
+			// Retrieve the courses taught by the lecturer
+			List<string> courses = new List<string>();
+			using (SqlConnection conn = new SqlConnection(connectionString))
+			{
+				conn.Open();
+				string getCoursesQuery = "SELECT CourseCode FROM Courses WHERE Username = @Username";
+				using (SqlCommand cmd = new SqlCommand(getCoursesQuery, conn))
+				{
+					cmd.Parameters.AddWithValue("@Username", lecturerUsername);
+					using (SqlDataReader reader = cmd.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							courses.Add(reader["CourseCode"].ToString());
+						}
+					}
+				}
+			}
+
+			// Iterate over each course table and search for the phone number
+			using (SqlConnection conn = new SqlConnection(connectionString))
+			{
+				conn.Open();
+
+				foreach (string course in courses)
+				{
+					string query = $@"
+                            SELECT StudentID, FullName, '{course}' AS Course, ProgramCode, PhoneNumber
+                            FROM [{course}]
+                            WHERE PhoneNumber LIKE '%' + @SearchQuery + '%'";
+
+					using (SqlCommand cmd = new SqlCommand(query, conn))
+					{
+						cmd.Parameters.AddWithValue("@SearchQuery", searchQuery);
+						using (SqlDataReader reader = cmd.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string studentID = reader["StudentID"].ToString();
+								string fullName = reader["FullName"].ToString();
+								string courseCode = reader["Course"].ToString();
+								string programCode = reader["ProgramCode"].ToString();
+								string phoneNumber = reader["PhoneNumber"].ToString();
+
+								if (!studentInfo.ContainsKey(studentID))
+								{
+									studentInfo[studentID] = (fullName, programCode, phoneNumber, new List<string>());
+								}
+
+								studentInfo[studentID].CourseCodes.Add(courseCode);
+							}
+						}
+					}
+				}
+			}
+
+			// Add data to DataGridView
+			foreach (var student in studentInfo)
+			{
+				dgv.Rows.Add(
+					student.Key,  // StudentID
+					student.Value.FullName,  // Full Name
+					string.Join("\n", student.Value.CourseCodes),  // Course Code(s)
+					student.Value.ProgramCode,  // Program Code
+					student.Value.PhoneNumber  // Phone Number
+				);
+			}
+
+			// Set the column widths
+			dgv.Columns["StudentID"].Width = 100;
+			dgv.Columns["ProgramCode"].Width = 80;
+			dgv.Columns["PhoneNumber"].Width = 120; 
+			dgv.Columns["CourseCode"].Width = 100; 
+			dgv.Columns["FullName"].Width = 316;
+
+			// Adjust row height to fit all lines
+			foreach (DataGridViewRow row in dgv.Rows)
+			{
+				row.Height = row.GetPreferredHeight(row.Index, DataGridViewAutoSizeRowMode.AllCells, true);
+			}
+
+			// Add the DataGridView to the panel
+			panelphone.Controls.Add(dgv);
+		}
+
+		public class ComboBoxItem
+		{
+			public string CourseCode { get; set; }
+			public string DisplayValue { get; set; }
+
+			public ComboBoxItem(string courseCode, string displayValue)
+			{
+				CourseCode = courseCode;
+				DisplayValue = displayValue;
+			}
+
+			public override string ToString()
+			{
+				return DisplayValue; // This will be displayed in the ComboBox
+			}
+		}
+
+		// Method to populate the ComboBox with courses taught by the lecturer
+		private void PopulateTeachDropdown()
+		{
+			try
+			{
+				comBox_teach.Items.Clear();
+				using (SqlConnection conn = new SqlConnection(connectionString))
+				{
+					conn.Open();
+					string query = "SELECT CourseCode, CourseName, GroupNumber FROM Courses WHERE Username = @Username";
+					using (SqlCommand cmd = new SqlCommand(query, conn))
+					{
+						cmd.Parameters.AddWithValue("@Username", lecturerUsername);
+						using (SqlDataReader reader = cmd.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string courseCode = reader["CourseCode"].ToString();
+								string courseName = reader["CourseName"].ToString();
+								string groupNumber = reader["GroupNumber"].ToString();
+								string displayValue = $"{courseName} - Group {groupNumber}";
+
+								comBox_teach.Items.Add(new ComboBoxItem(courseCode, displayValue));
+							}
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"Error fetching courses: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		// Event handler for the "Choose" button click
+		private void btn_Choose_Click(object sender, EventArgs e)
+		{
+			if (comBox_teach.SelectedItem is ComboBoxItem selectedCourseItem)
+			{
+				string courseCode = selectedCourseItem.CourseCode; // Get the actual course code
+				RandomlyChooseStudent(courseCode); // Your method to choose a student
+			}
+			else
+			{
+				MessageBox.Show("Please select a course.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		// Method to randomly choose a student from the selected course
+		private void RandomlyChooseStudent(string courseCode)
+		{
+			try
+			{
+				using (SqlConnection conn = new SqlConnection(connectionString))
+				{
+					conn.Open();
+					string query = $"SELECT FullName FROM [{courseCode}]";
+					using (SqlCommand cmd = new SqlCommand(query, conn))
+					{
+						using (SqlDataReader reader = cmd.ExecuteReader())
+						{
+							List<string> studentNames = new List<string>();
+							while (reader.Read())
+							{
+								studentNames.Add(reader["FullName"].ToString());
+							}
+
+							if (studentNames.Count > 0)
+							{
+								Random random = new Random();
+								int index = random.Next(studentNames.Count);
+								MessageBox.Show($"Selected Student: {studentNames[index]}", "Student Selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
+							}
+							else
+							{
+								MessageBox.Show("No students found in the selected course.", "No Students", MessageBoxButtons.OK, MessageBoxIcon.Information);
+							}
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"Error selecting student: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 	}

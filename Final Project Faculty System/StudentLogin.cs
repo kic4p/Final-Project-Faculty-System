@@ -52,8 +52,8 @@ namespace Final_Project_Faculty_System
 							this.Hide();
 
 							// Show the StudentDashboard form
-							StudentDashboard studentDashboard = new StudentDashboard(studentID);
-							studentDashboard.Show();
+							CourseRegister courseRegister = new CourseRegister(studentID);
+							courseRegister.Show();
 						}
 						else
 						{
